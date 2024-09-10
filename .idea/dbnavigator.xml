@@ -12,11 +12,11 @@
   <component name="DBNavigator.Project.DatabaseBrowserManager">
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
-    <show-object-properties value="false" />
+    <show-object-properties value="true" />
     <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
-    <connection id="281af675-42a6-4d23-bf30-799738ebf83b">
+    <connection id="f9a1e76b-6e2c-4870-942d-d1b72e80aa5e">
       <console name="Connection" type="STANDARD" schema="" session="Main" />
     </connection>
   </component>
@@ -46,13 +46,13 @@
   </component>
   <component name="DBNavigator.Project.Settings">
     <connections>
-      <connection id="281af675-42a6-4d23-bf30-799738ebf83b" active="true" signed="true">
+      <connection id="f9a1e76b-6e2c-4870-942d-d1b72e80aa5e" active="true" signed="true">
         <database>
           <name value="Connection" />
           <description value="" />
           <database-type value="SQLITE" />
           <config-type value="BASIC" />
-          <database-version value="3.44" />
+          <database-version value="9999.0" />
           <driver-source value="BUNDLED" />
           <driver-library value="" />
           <driver value="" />

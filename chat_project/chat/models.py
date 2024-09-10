@@ -1,11 +1,15 @@
 from django.db import models
 from django.conf import settings
-from user.models import User
+
+__all__ = (
+    "Thread",
+    "Message",
+)
 
 
 class Thread(models.Model):
     participants = models.ManyToManyField(
-        User,
+        settings.AUTH_USER_MODEL,
         related_name='threads'
     )
     created = models.DateTimeField(auto_now_add=True)
