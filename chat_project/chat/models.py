@@ -15,16 +15,14 @@ class Thread(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    def save(self, *args, **kwargs):
-        """
-        Check that there are no more than two participants in a thread
-        """
-        if self.participants.count() > 2:
-            raise ValueError('Thread cannot have more than two participants.')
-        super().save(*args, **kwargs)
-
     def __str__(self):
-        return f"Thread between {', '.join([user.email for user in self.participants.all()])}"
+        if self.id is None:
+            return "Thread not saved yet"
+
+        participants = self.participants.all()
+        if participants.exists():
+            return f"Thread between {', '.join([user.email for user in participants])}"
+        return "Thread with no participants"
 
 
 class Message(models.Model):

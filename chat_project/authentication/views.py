@@ -11,9 +11,6 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        print('here')
-        # import pdb
-
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()

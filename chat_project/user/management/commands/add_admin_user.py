@@ -1,12 +1,6 @@
-import base64
 import os
-from io import BytesIO
-
-from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.management.commands import createsuperuser
-from django.core.mail import send_mail
-from django.utils.html import strip_tags
 from user.models import User
 
 
@@ -18,11 +12,9 @@ class Command(createsuperuser.Command):
     """
 
     def handle(self, *args, **options):
-
-        print("Starting to create admin user")  # Отладочный вывод
-
         first_name = "first_name_admin"
         last_name = "last_name_admin"
+        username = "admin"
         email = "nickolay.varvonets@gmail.com"
 
         email = os.getenv("ADMIN_EMAIL", email)
@@ -30,13 +22,12 @@ class Command(createsuperuser.Command):
         if not password or not email:
             raise Exception("Email or password are not provided.")
 
-        user = User.objects.create(
+        user = User.objects.create_superuser(
             email=email.lower(),
-            password=make_password(password),
+            password=password,
+            username=username,
             first_name=first_name,
             last_name=last_name,
-            is_staff=True,
-            is_superuser=True,
             is_active=True,
         )
 
