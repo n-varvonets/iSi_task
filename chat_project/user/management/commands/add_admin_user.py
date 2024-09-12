@@ -10,7 +10,6 @@ class Command(createsuperuser.Command):
 
     python manage.py add_admin_user
     """
-
     def handle(self, *args, **options):
         first_name = "first_name_admin"
         last_name = "last_name_admin"

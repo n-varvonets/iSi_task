@@ -97,11 +97,13 @@ class ThreadViewSet(viewsets.ModelViewSet):
         thread.delete()
         return Response({'status': 'Thread deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], url_path='user_threads')
     def user_threads(self, request: HttpRequest) -> Response:
         """
         Returns a paginated list of threads for the current user.
         """
+        print(f"User making request: {request.user}")
+
         user = request.user
         threads = Thread.objects.filter(participants=user)
         page = self.paginate_queryset(threads)
@@ -120,9 +122,9 @@ class ThreadViewSet(viewsets.ModelViewSet):
         messages = thread.messages.select_related('sender').all()
         page = self.paginate_queryset(messages)
         if page is not None:
-            serializer = self.get_serializer(page, many=True)
+            serializer = MessageSerializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-        serializer = self.get_serializer(messages, many=True)
+        serializer = MessageSerializer(messages, many=True)
         return Response(serializer.data)
 
 

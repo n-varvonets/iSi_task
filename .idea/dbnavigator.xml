@@ -27,7 +27,19 @@
     <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
-    <connection id="281af675-42a6-4d23-bf30-799738ebf83b" />
+    <connection id="f9a1e76b-6e2c-4870-942d-d1b72e80aa5e" />
+  </component>
+  <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="f9a1e76b-6e2c-4870-942d-d1b72e80aa5e" dataset="main.django_migrations" active-filter-id="bdf0a5c5-85ca-4b99-be89-ccc81b37e898">
+      <filter id="bdf0a5c5-85ca-4b99-be89-ccc81b37e898" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="f9a1e76b-6e2c-4870-942d-d1b72e80aa5e" dataset="main.user_user" active-filter-id="bd83893a-73bb-4bdf-9166-61882352133e">
+      <filter id="bd83893a-73bb-4bdf-9166-61882352133e" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
   </component>
   <component name="DBNavigator.Project.ExecutionManager">
     <retain-sticky-names value="false" />
@@ -93,7 +105,7 @@
           <session-management value="true" />
           <ddl-file-binding value="true" />
           <database-logging value="true" />
-          <connect-automatically value="true" />
+          <connect-automatically value="false" />
           <restore-workspace value="true" />
           <restore-workspace-deep value="false" />
           <environment-type value="default" />

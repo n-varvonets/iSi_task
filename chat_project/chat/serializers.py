@@ -30,26 +30,28 @@ class ThreadSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    thread = serializers.IntegerField()
+    thread = serializers.PrimaryKeyRelatedField(queryset=Thread.objects.all())
 
     class Meta:
         model = Message
         fields = '__all__'
-
-    def validate_thread(self, value):
-        """
-        Validate that the thread with the given ID exists.
-        """
-        if not Thread.objects.filter(id=value).exists():
-            raise serializers.ValidationError(f"Thread with id {value} does not exist.")
-        return value
 
     def validate_sender(self, value):
         """
         Validate that the sender with the given ID exists.
         """
         User = get_user_model()
+        thread = self.initial_data.get('thread')  #
+        thread_obj = Thread.objects.filter(id=thread).first()
+
+        if not thread_obj:
+            raise serializers.ValidationError(f"Thread with id {thread} does not exist.")
+
         if not User.objects.filter(id=value.id).exists():
             raise serializers.ValidationError(f"Sender with id {value.id} does not exist.")
+
+        if value not in thread_obj.participants.all():
+            raise serializers.ValidationError(f"Sender with id {value.id} is not a participant in the thread.")
+
         return value
 
