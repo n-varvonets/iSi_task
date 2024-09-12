@@ -17,8 +17,16 @@ __all__ = (
 
 class ThreadViewSet(viewsets.ModelViewSet):
     """
-    ThreadViewSet handles all CRUD operations for the Thread model:
-    - creation, retrieval, update, and deletion of threads
+    ThreadViewSet handles CRUD operations for the Thread model, including:
+
+    - `create`: Checks if a thread with the same participants exists. If found, returns the existing thread, otherwise creates a new one.
+    - `destroy`: Deletes a specific thread.
+    - `user_threads`: Returns a list of threads for the current authenticated user.
+    - `messages`: Retrieves all messages from a specific thread.
+
+    Key methods:
+    - `_get_existing_thread`: Finds a thread with exactly two matching participants.
+    - Custom validation in `create`: Ensures two unique participants per thread.
     """
     # todo:
     #  - add schema
@@ -92,29 +100,39 @@ class ThreadViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def user_threads(self, request: HttpRequest) -> Response:
         """
-        Returns a list of threads for the current user.
+        Returns a paginated list of threads for the current user.
         """
         user = request.user
         threads = Thread.objects.filter(participants=user)
+        page = self.paginate_queryset(threads)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
         serializer = self.get_serializer(threads, many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=['get'])
     def messages(self, request: HttpRequest, pk: Optional[int] = None) -> Response:
         """
-        Custom action to retrieve the list of messages for a specific thread.
+        Custom action to retrieve a paginated list of messages for a specific thread.
         """
         thread = self.get_object()
         messages = thread.messages.select_related('sender').all()
-        serializer = MessageSerializer(messages, many=True)
+        page = self.paginate_queryset(messages)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(messages, many=True)
         return Response(serializer.data)
 
 
 class MessageViewSet(viewsets.ModelViewSet):
     """
-    MessageViewSet handles all CRUD operations for the Message model:
-    - creation, retrieval, update, and deletion of messages
-    """
+    MessageViewSet handles CRUD operations for the Message model, including:
+
+    - `unread`: Returns the count of unread messages for the current authenticated user.
+    - `mark_as_read`: Marks a specific message as read.
+        """
     serializer_class = MessageSerializer
     queryset = Message.objects.all()
     permission_classes = [IsAuthenticated]
