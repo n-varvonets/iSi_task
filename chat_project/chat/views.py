@@ -22,11 +22,10 @@ class ThreadViewSet(viewsets.ModelViewSet):
     """
     # todo:
     #  - add schema
-    #  - perm and auth classes
 
     serializer_class = ThreadSerializer
     queryset = Thread.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def _get_existing_thread(self, participants: list[int]) -> QuerySet:
         """
@@ -49,7 +48,7 @@ class ThreadViewSet(viewsets.ModelViewSet):
         | 3         | [1, 3]       | 2                 | 1                     |
         |-----------|--------------|-------------------|-----------------------|
         """
-        return Thread.objects.annotate(
+        return Thread.objects.prefetch_related('participants').annotate(
             participant_count=Count('participants'),  # Count the number of participants in each thread
             matching_participants=Count('participants', filter=Q(participants__in=participants))
             # Count matching participants
@@ -79,13 +78,26 @@ class ThreadViewSet(viewsets.ModelViewSet):
         participants = list(map(int, participants))
         existing_thread = self._get_existing_thread(participants)
         if existing_thread.exists():
-            return Response(
-                {"error": "Thread with these participants already exists."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            serializer = self.get_serializer(existing_thread.first())
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         # 3. if no matching thread exists, create a new thread
         return super().create(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        thread = self.get_object()
+        thread.delete()
+        return Response({'status': 'Thread deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=False, methods=['get'])
+    def user_threads(self, request: HttpRequest) -> Response:
+        """
+        Returns a list of threads for the current user.
+        """
+        user = request.user
+        threads = Thread.objects.filter(participants=user)
+        serializer = self.get_serializer(threads, many=True)
+        return Response(serializer.data)
 
     @action(detail=True, methods=['get'])
     def messages(self, request: HttpRequest, pk: Optional[int] = None) -> Response:
@@ -93,7 +105,7 @@ class ThreadViewSet(viewsets.ModelViewSet):
         Custom action to retrieve the list of messages for a specific thread.
         """
         thread = self.get_object()
-        messages = thread.messages.all()
+        messages = thread.messages.select_related('sender').all()
         serializer = MessageSerializer(messages, many=True)
         return Response(serializer.data)
 
